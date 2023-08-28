@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <process.h>
-#include <conio.h>
-#include <dos.h>
+// #include <process.h>
+// #include <conio.h>
+// #include <dos.h>
 
 #include "doomnet.h"
 //#include "ipxstr.h"
@@ -48,8 +48,7 @@ void LaunchDOOM (void)
 
 // hook the interrupt vector
 	 olddoomvect = getvect (doomcom.intnum);
-     setvect (doomcom.intnum,(void interrupt (*)(void))MK_FP(_CS, 
-(int)NetISR));
+     setvect (doomcom.intnum,(void interrupt (*)(void))MK_FP(_CS, (int)NetISR));
      vectorishooked = 1;
 
 // build the argument list for DOOM, adding a -net &doomcom

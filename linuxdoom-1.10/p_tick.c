@@ -105,19 +105,19 @@ void P_RunThinkers (void)
     currentthinker = thinkercap.next;
     while (currentthinker != &thinkercap)
     {
-	if ( currentthinker->function.acv == (actionf_v)(-1) )
-	{
-	    // time to remove it
-	    currentthinker->next->prev = currentthinker->prev;
-	    currentthinker->prev->next = currentthinker->next;
-	    Z_Free (currentthinker);
-	}
-	else
-	{
-	    if (currentthinker->function.acp1)
-		currentthinker->function.acp1 (currentthinker);
-	}
-	currentthinker = currentthinker->next;
+        if ( currentthinker->function.acv == (actionf_v)(-1) )
+        {
+            // time to remove it
+            currentthinker->next->prev = currentthinker->prev;
+            currentthinker->prev->next = currentthinker->next;
+            Z_Free (currentthinker);
+        }
+        else
+        {
+            if (currentthinker->function.acp1)
+                currentthinker->function.acp1 (currentthinker);
+        }
+        currentthinker = currentthinker->next;
     }
 }
 
@@ -132,22 +132,18 @@ void P_Ticker (void)
     int		i;
     
     // run the tic
-    if (paused)
-	return;
+    if (paused) return;
 		
     // pause if in menu and at least one tic has been run
-    if ( !netgame
-	 && menuactive
-	 && !demoplayback
-	 && players[consoleplayer].viewz != 1)
+    if ( !netgame && menuactive && !demoplayback && players[consoleplayer].viewz != 1)
     {
-	return;
+	    return;
     }
     
 		
     for (i=0 ; i<MAXPLAYERS ; i++)
-	if (playeringame[i])
-	    P_PlayerThink (&players[i]);
+        if (playeringame[i])
+            P_PlayerThink (&players[i]);
 			
     P_RunThinkers ();
     P_UpdateSpecials ();

@@ -41,8 +41,8 @@ rcsid[] = "$Id: i_unix.c,v 1.5 1997/02/03 22:45:10 b1 Exp $";
 #include <unistd.h>
 #include <sys/ioctl.h>
 
-// Linux voxware output.
-#include <linux/soundcard.h>
+// Linux voxware output. (Need to change this)
+// #include <linux/soundcard.h>
 
 // Timer stuff. Experimental.
 #include <time.h>
@@ -156,11 +156,7 @@ int*		channelrightvol_lookup[NUM_CHANNELS];
 //
 // Safe ioctl, convenience.
 //
-void
-myioctl
-( int	fd,
-  int	command,
-  int*	arg )
+void myioctl (int fd, int command, int* arg)
 {   
     int		rc;
     extern int	errno;
@@ -168,9 +164,9 @@ myioctl
     rc = ioctl(fd, command, arg);  
     if (rc < 0)
     {
-	fprintf(stderr, "ioctl(dsp,%d,arg) failed\n", command);
-	fprintf(stderr, "errno=%d\n", errno);
-	exit(-1);
+        fprintf(stderr, "ioctl(dsp,%d,arg) failed\n", command);
+        fprintf(stderr, "errno=%d\n", errno);
+        exit(-1);
     }
 }
 
@@ -182,10 +178,7 @@ myioctl
 // This function loads the sound data from the WAD lump,
 //  for single sound.
 //
-void*
-getsfx
-( char*         sfxname,
-  int*          len )
+void* getsfx (char* sfxname, int* len)
 {
     unsigned char*      sfx;
     unsigned char*      paddedsfx;
@@ -210,24 +203,24 @@ getsfx
     // I do not do runtime patches to that
     //  variable. Instead, we will use a
     //  default sound for replacement.
-    if ( W_CheckNumForName(name) == -1 )
-      sfxlump = W_GetNumForName("dspistol");
-    else
-      sfxlump = W_GetNumForName(name);
-    
+    if (W_CheckNumForName(name) == -1) {
+        sfxlump = W_GetNumForName("dspistol");
+    } else {
+        sfxlump = W_GetNumForName(name);
+    }
     size = W_LumpLength( sfxlump );
 
     // Debug.
     // fprintf( stderr, "." );
-    //fprintf( stderr, " -loading  %s (lump %d, %d bytes)\n",
-    //	     sfxname, sfxlump, size );
-    //fflush( stderr );
+    // fprintf( stderr, " -loading  %s (lump %d, %d bytes)\n",
+    // 	     sfxname, sfxlump, size );
+    // fflush( stderr );
     
     sfx = (unsigned char*)W_CacheLumpNum( sfxlump, PU_STATIC );
 
     // Pads the sound effect out to the mixing buffer size.
     // The original realloc would interfere with zone memory.
-    paddedsize = ((size-8 + (SAMPLECOUNT-1)) / SAMPLECOUNT) * SAMPLECOUNT;
+    paddedsize = ((size - 8 + (SAMPLECOUNT - 1)) / SAMPLECOUNT) * SAMPLECOUNT;
 
     // Allocate from zone memory.
     paddedsfx = (unsigned char*)Z_Malloc( paddedsize+8, PU_STATIC, 0 );
@@ -236,12 +229,12 @@ getsfx
     //  which does not kick in in the soundserver.
 
     // Now copy and pad.
-    memcpy(  paddedsfx, sfx, size );
-    for (i=size ; i<paddedsize+8 ; i++)
+    memcpy(paddedsfx, sfx, size);
+    for (i = size; i < paddedsize + 8; i++) {
         paddedsfx[i] = 128;
-
+    }
     // Remove the cached lump.
-    Z_Free( sfx );
+    Z_Free(sfx);
     
     // Preserve padded length.
     *len = paddedsize;
@@ -261,12 +254,7 @@ getsfx
 //  (eight, usually) of internal channels.
 // Returns a handle.
 //
-int
-addsfx
-( int		sfxid,
-  int		volume,
-  int		step,
-  int		seperation )
+int addsfx (int sfxid, int volume, int step, int seperation)
 {
     static unsigned short	handlenums = 0;
  
@@ -289,41 +277,40 @@ addsfx
 	 || sfxid == sfx_stnmov
 	 || sfxid == sfx_pistol	 )
     {
-	// Loop all channels, check.
-	for (i=0 ; i<NUM_CHANNELS ; i++)
-	{
-	    // Active, and using the same SFX?
-	    if ( (channels[i])
-		 && (channelids[i] == sfxid) )
-	    {
-		// Reset.
-		channels[i] = 0;
-		// We are sure that iff,
-		//  there will only be one.
-		break;
-	    }
-	}
+      // Loop all channels, check.
+      for (i = 0; i < NUM_CHANNELS; i++)
+      {
+        // Active, and using the same SFX?
+        if ((channels[i]) && (channelids[i] == sfxid))
+        {
+          // Reset.
+          channels[i] = 0;
+          // We are sure that iff,
+          //  there will only be one.
+          break;
+        }
+      }
     }
 
     // Loop all channels to find oldest SFX.
-    for (i=0; (i<NUM_CHANNELS) && (channels[i]); i++)
+    for (i = 0; (i < NUM_CHANNELS) && (channels[i]); i++)
     {
-	if (channelstart[i] < oldest)
-	{
-	    oldestnum = i;
-	    oldest = channelstart[i];
-	}
+      if (channelstart[i] < oldest)
+      {
+        oldestnum = i;
+        oldest = channelstart[i];
+      }
     }
 
     // Tales from the cryptic.
     // If we found a channel, fine.
     // If not, we simply overwrite the first one, 0.
     // Probably only happens at startup.
-    if (i == NUM_CHANNELS)
-	slot = oldestnum;
-    else
-	slot = i;
-
+    if (i == NUM_CHANNELS) {
+    	slot = oldestnum;
+    } else {
+	    slot = i;
+    }
     // Okay, in the less recent channel,
     //  we will handle the new SFX.
     // Set pointer to raw data.
@@ -332,9 +319,9 @@ addsfx
     channelsend[slot] = channels[slot] + lengths[sfxid];
 
     // Reset current handle number, limited to 0..100.
-    if (!handlenums)
-	handlenums = 100;
-
+    if (!handlenums) {
+    	handlenums = 100;
+    }
     // Assign current handle number.
     // Preserved so sounds could be stopped (unused).
     channelhandles[slot] = rc = handlenums++;
@@ -354,23 +341,21 @@ addsfx
     // Per left/right channel.
     //  x^2 seperation,
     //  adjust volume properly.
-    leftvol =
-	volume - ((volume*seperation*seperation) >> 16); ///(256*256);
+    leftvol = volume - ((volume*seperation*seperation) >> 16); ///(256*256);
     seperation = seperation - 257;
-    rightvol =
-	volume - ((volume*seperation*seperation) >> 16);	
+    rightvol = volume - ((volume*seperation*seperation) >> 16);	
 
     // Sanity check, clamp volume.
-    if (rightvol < 0 || rightvol > 127)
-	I_Error("rightvol out of bounds");
-    
-    if (leftvol < 0 || leftvol > 127)
-	I_Error("leftvol out of bounds");
-    
+    if (rightvol < 0 || rightvol > 127) {
+	    I_Error("rightvol out of bounds");
+    }
+    if (leftvol < 0 || leftvol > 127) {
+	    I_Error("leftvol out of bounds");
+    }
     // Get the proper lookup table piece
     //  for this volume level???
-    channelleftvol_lookup[slot] = &vol_lookup[leftvol*256];
-    channelrightvol_lookup[slot] = &vol_lookup[rightvol*256];
+    channelleftvol_lookup[slot] = &vol_lookup[leftvol * 256];
+    channelrightvol_lookup[slot] = &vol_lookup[rightvol * 256];
 
     // Preserve sound SFX id,
     //  e.g. for avoiding duplicates of chainsaw.
@@ -411,16 +396,18 @@ void I_SetChannels()
 
   // This table provides step widths for pitch parameters.
   // I fail to see that this is currently used.
-  for (i=-128 ; i<128 ; i++)
-    steptablemid[i] = (int)(pow(2.0, (i/64.0))*65536.0);
-  
+  for (i = -128; i < 128; i++) {
+    steptablemid[i] = (int) (pow(2.0, (i / 64.0)) * 65536.0);
+  }
   
   // Generates volume lookup tables
   //  which also turn the unsigned samples
   //  into signed samples.
-  for (i=0 ; i<128 ; i++)
-    for (j=0 ; j<256 ; j++)
-      vol_lookup[i*256+j] = (i*(j-128)*256)/127;
+  for (i = 0; i < 128; i++) {
+    for (j = 0; j < 256; j++) {
+      vol_lookup[i * 256 + j] = (i * (j - 128) * 256) / 127;
+    }
+  }
 }	
 
  
@@ -467,13 +454,7 @@ int I_GetSfxLumpNum(sfxinfo_t* sfx)
 // Pitching (that is, increased speed of playback)
 //  is set, but currently not used by mixing.
 //
-int
-I_StartSound
-( int		id,
-  int		vol,
-  int		sep,
-  int		pitch,
-  int		priority )
+int I_StartSound (int id, int vol, int sep, int pitch, int priority)
 {
 
   // UNUSED
@@ -482,8 +463,8 @@ I_StartSound
 #ifdef SNDSERV 
     if (sndserver)
     {
-	fprintf(sndserver, "p%2.2x%2.2x%2.2x%2.2x\n", id, pitch, vol, sep);
-	fflush(sndserver);
+      fprintf(sndserver, "p%2.2x%2.2x%2.2x%2.2x\n", id, pitch, vol, sep);
+      fflush(sndserver);
     }
     // warning: control reaches end of non-void function.
     return id;
@@ -514,7 +495,7 @@ void I_StopSound (int handle)
 }
 
 
-int I_SoundIsPlaying(int handle)
+int I_SoundIsPlaying (int handle)
 {
     // Ouch.
     return gametic < handle;
@@ -536,29 +517,29 @@ int I_SoundIsPlaying(int handle)
 //
 // This function currently supports only 16bit.
 //
-void I_UpdateSound( void )
+void I_UpdateSound (void)
 {
 #ifdef SNDINTR
   // Debug. Count buffer misses with interrupt.
-  static int misses = 0;
+    static int misses = 0;
 #endif
 
   
-  // Mix current sound data.
-  // Data, from raw sound, for right and left.
-  register unsigned int	sample;
-  register int		dl;
-  register int		dr;
-  
-  // Pointers in global mixbuffer, left, right, end.
-  signed short*		leftout;
-  signed short*		rightout;
-  signed short*		leftend;
-  // Step in mixbuffer, left and right, thus two.
-  int				step;
+    // Mix current sound data.
+    // Data, from raw sound, for right and left.
+    register unsigned int	sample;
+    register int		dl;
+    register int		dr;
+    
+    // Pointers in global mixbuffer, left, right, end.
+    signed short*		leftout;
+    signed short*		rightout;
+    signed short*		leftend;
+    // Step in mixbuffer, left and right, thus two.
+    int				step;
 
-  // Mixing channel index.
-  int				chan;
+    // Mixing channel index.
+    int				chan;
     
     // Left and right channel
     //  are in global mixbuffer, alternating.
@@ -575,63 +556,64 @@ void I_UpdateSound( void )
     //  that is 512 values for two channels.
     while (leftout != leftend)
     {
-	// Reset left/right value. 
-	dl = 0;
-	dr = 0;
+      // Reset left/right value. 
+      dl = 0;
+      dr = 0;
 
-	// Love thy L2 chache - made this a loop.
-	// Now more channels could be set at compile time
-	//  as well. Thus loop those  channels.
-	for ( chan = 0; chan < NUM_CHANNELS; chan++ )
-	{
-	    // Check channel, if active.
-	    if (channels[ chan ])
-	    {
-		// Get the raw data from the channel. 
-		sample = *channels[ chan ];
-		// Add left and right part
-		//  for this channel (sound)
-		//  to the current data.
-		// Adjust volume accordingly.
-		dl += channelleftvol_lookup[ chan ][sample];
-		dr += channelrightvol_lookup[ chan ][sample];
-		// Increment index ???
-		channelstepremainder[ chan ] += channelstep[ chan ];
-		// MSB is next sample???
-		channels[ chan ] += channelstepremainder[ chan ] >> 16;
-		// Limit to LSB???
-		channelstepremainder[ chan ] &= 65536-1;
+      // Love thy L2 chache - made this a loop.
+      // Now more channels could be set at compile time
+      //  as well. Thus loop those  channels.
+      for (chan = 0; chan < NUM_CHANNELS; chan++)
+      {
+        // Check channel, if active.
+        if (channels[chan])
+        {
+          // Get the raw data from the channel. 
+          sample = *channels[ chan ];
+          // Add left and right part
+          //  for this channel (sound)
+          //  to the current data.
+          // Adjust volume accordingly.
+          dl += channelleftvol_lookup[ chan ][sample];
+          dr += channelrightvol_lookup[ chan ][sample];
+          // Increment index ???
+          channelstepremainder[ chan ] += channelstep[ chan ];
+          // MSB is next sample???
+          channels[ chan ] += channelstepremainder[ chan ] >> 16;
+          // Limit to LSB???
+          channelstepremainder[ chan ] &= 65536 - 1;
 
-		// Check whether we are done.
-		if (channels[ chan ] >= channelsend[ chan ])
-		    channels[ chan ] = 0;
-	    }
-	}
-	
-	// Clamp to range. Left hardware channel.
-	// Has been char instead of short.
-	// if (dl > 127) *leftout = 127;
-	// else if (dl < -128) *leftout = -128;
-	// else *leftout = dl;
+          // Check whether we are done.
+          if (channels[ chan ] >= channelsend[ chan ]) {
+            channels[ chan ] = 0;
+          }
+        }
+      }
+      
+      // Clamp to range. Left hardware channel.
+      // Has been char instead of short.
+      // if (dl > 127) *leftout = 127;
+      // else if (dl < -128) *leftout = -128;
+      // else *leftout = dl;
 
-	if (dl > 0x7fff)
-	    *leftout = 0x7fff;
-	else if (dl < -0x8000)
-	    *leftout = -0x8000;
-	else
-	    *leftout = dl;
-
-	// Same for right hardware channel.
-	if (dr > 0x7fff)
-	    *rightout = 0x7fff;
-	else if (dr < -0x8000)
-	    *rightout = -0x8000;
-	else
-	    *rightout = dr;
-
-	// Increment current pointers in mixbuffer.
-	leftout += step;
-	rightout += step;
+      if (dl > 0x7fff) {
+          *leftout = 0x7fff;
+      } else if (dl < -0x8000) {
+          *leftout = -0x8000;
+      } else {
+          *leftout = dl;
+      }
+      // Same for right hardware channel.
+      if (dr > 0x7fff) {
+          *rightout = 0x7fff;
+      } else if (dr < -0x8000) {
+          *rightout = -0x8000;
+      } else {
+          *rightout = dr;
+      }
+      // Increment current pointers in mixbuffer.
+      leftout += step;
+      rightout += step;
     }
 
 #ifdef SNDINTR
@@ -662,8 +644,7 @@ void I_UpdateSound( void )
 // Mixing now done synchronous, and
 //  only output be done asynchronous?
 //
-void
-I_SubmitSound(void)
+void I_SubmitSound(void)
 {
   // Write it to DSP device.
   write(audio_fd, mixbuffer, SAMPLECOUNT*BUFMUL);
@@ -671,12 +652,7 @@ I_SubmitSound(void)
 
 
 
-void
-I_UpdateSoundParams
-( int	handle,
-  int	vol,
-  int	sep,
-  int	pitch)
+void I_UpdateSoundParams (int handle, int vol, int sep, int	pitch)
 {
   // I fail too see that this is used.
   // Would be using the handle to identify
@@ -711,7 +687,7 @@ void I_ShutdownSound(void)
   
   while ( !done )
   {
-    for( i=0 ; i<8 && !channels[i] ; i++);
+    for(i = 0; i < 8 && !channels[i]; i++);
     
     // FIXME. No proper channel output.
     //if (i==8)
@@ -734,27 +710,25 @@ void I_ShutdownSound(void)
 
 
 
-void
-I_InitSound()
+void I_InitSound()
 { 
 #ifdef SNDSERV
   char buffer[256];
   
-  if (getenv("DOOMWADDIR"))
-    sprintf(buffer, "%s/%s",
-	    getenv("DOOMWADDIR"),
-	    sndserver_filename);
-  else
+  if (getenv("DOOMWADDIR")) {
+    sprintf(buffer, "%s/%s", getenv("DOOMWADDIR"), sndserver_filename);
+  } else {
     sprintf(buffer, "%s", sndserver_filename);
-  
+  }
   // start sound process
   if ( !access(buffer, X_OK) )
   {
     strcat(buffer, " -quiet");
     sndserver = popen(buffer, "w");
   }
-  else
+  else {
     fprintf(stderr, "Could not start sound server [%s]\n", buffer);
+  }
 #else
     
   int i;
@@ -920,7 +894,7 @@ void I_HandleSoundTimer( int ignore )
   //fprintf( stderr, "%c", '+' ); fflush( stderr );
   
   // Feed sound device if necesary.
-  if ( flag )
+  if (flag)
   {
     // See I_SubmitSound().
     // Write it to DSP device.

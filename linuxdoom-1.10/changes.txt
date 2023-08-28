@@ -1,0 +1,11 @@
+- Added README.md
+- Formatted code to my liking; made it easier to read; indented where necessary
+- Commented out some out of date libraries from files 
+    - m_bbox.c (replaced values.h with limits.h)
+    - i_video.c (errnos replaced with errno)
+- Changed some of the conditional logic to remove nested statements
+    - m_misc
+    - p_switch.c (fixed if else block that was weirdly formatted)
+- Files to come back to
+    - p_saveg.c: P_ArchiveThinkers
+- In the process of translating i_video.c from X11 to SDL, so it can work on my Mac

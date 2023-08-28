@@ -309,8 +309,7 @@ S_StartSoundAtVolume
 			     &sep,
 			     &pitch);
 	
-    if ( origin->x == players[consoleplayer].mo->x
-	 && origin->y == players[consoleplayer].mo->y)
+    if ( origin->x == players[consoleplayer].mo->x && origin->y == players[consoleplayer].mo->y)
     {	
       sep 	= NORM_SEP;
     }
@@ -324,8 +323,7 @@ S_StartSoundAtVolume
   }
   
   // hacks to vary the sfx pitches
-  if (sfx_id >= sfx_sawup
-      && sfx_id <= sfx_sawhit)
+  if (sfx_id >= sfx_sawup && sfx_id <= sfx_sawhit)
   {	
     pitch += 8 - (M_Random()&15);
     
@@ -334,8 +332,7 @@ S_StartSoundAtVolume
     else if (pitch>255)
       pitch = 255;
   }
-  else if (sfx_id != sfx_itemup
-	   && sfx_id != sfx_tink)
+  else if (sfx_id != sfx_itemup && sfx_id != sfx_tink)
   {
     pitch += 16 - (M_Random()&31);
     
@@ -475,11 +472,11 @@ void S_StopSound(void *origin)
 
     for (cnum=0 ; cnum<numChannels ; cnum++)
     {
-	if (channels[cnum].sfxinfo && channels[cnum].origin == origin)
-	{
-	    S_StopChannel(cnum);
-	    break;
-	}
+        if (channels[cnum].sfxinfo && channels[cnum].origin == origin)
+        {
+            S_StopChannel(cnum);
+            break;
+        }
     }
 }
 
@@ -498,8 +495,8 @@ void S_PauseSound(void)
 {
     if (mus_playing && !mus_paused)
     {
-	I_PauseSong(mus_playing->handle);
-	mus_paused = true;
+        I_PauseSong(mus_playing->handle);
+        mus_paused = true;
     }
 }
 
@@ -507,8 +504,8 @@ void S_ResumeSound(void)
 {
     if (mus_playing && mus_paused)
     {
-	I_ResumeSong(mus_playing->handle);
-	mus_paused = false;
+        I_ResumeSong(mus_playing->handle);
+        mus_paused = false;
     }
 }
 
@@ -552,58 +549,54 @@ void S_UpdateSounds(void* listener_p)
     
     for (cnum=0 ; cnum<numChannels ; cnum++)
     {
-	c = &channels[cnum];
-	sfx = c->sfxinfo;
+        c = &channels[cnum];
+        sfx = c->sfxinfo;
 
-	if (c->sfxinfo)
-	{
-	    if (I_SoundIsPlaying(c->handle))
-	    {
-		// initialize parameters
-		volume = snd_SfxVolume;
-		pitch = NORM_PITCH;
-		sep = NORM_SEP;
+        if (c->sfxinfo)
+        {
+            if (I_SoundIsPlaying(c->handle))
+            {
+                // initialize parameters
+                volume = snd_SfxVolume;
+                pitch = NORM_PITCH;
+                sep = NORM_SEP;
 
-		if (sfx->link)
-		{
-		    pitch = sfx->pitch;
-		    volume += sfx->volume;
-		    if (volume < 1)
-		    {
-			S_StopChannel(cnum);
-			continue;
-		    }
-		    else if (volume > snd_SfxVolume)
-		    {
-			volume = snd_SfxVolume;
-		    }
-		}
+                if (sfx->link)
+                {
+                    pitch = sfx->pitch;
+                    volume += sfx->volume;
+                    if (volume < 1)
+                    {
+                        S_StopChannel(cnum);
+                        continue;
+                    }
+                    else if (volume > snd_SfxVolume)
+                    {
+                        volume = snd_SfxVolume;
+                    }
+                }
 
-		// check non-local sounds for distance clipping
-		//  or modify their params
-		if (c->origin && listener_p != c->origin)
-		{
-		    audible = S_AdjustSoundParams(listener,
-						  c->origin,
-						  &volume,
-						  &sep,
-						  &pitch);
-		    
-		    if (!audible)
-		    {
-			S_StopChannel(cnum);
-		    }
-		    else
-			I_UpdateSoundParams(c->handle, volume, sep, pitch);
-		}
-	    }
-	    else
-	    {
-		// if channel is allocated but sound has stopped,
-		//  free it
-		S_StopChannel(cnum);
-	    }
-	}
+                // check non-local sounds for distance clipping
+                //  or modify their params
+                if (c->origin && listener_p != c->origin)
+                {
+                    audible = S_AdjustSoundParams(listener,c->origin,&volume,&sep,&pitch);
+                    
+                    if (!audible)
+                    {
+                        S_StopChannel(cnum);
+                    }
+                    else
+                        I_UpdateSoundParams(c->handle, volume, sep, pitch);
+                }
+            }
+            else
+            {
+                // if channel is allocated but sound has stopped,
+                //  free it
+                S_StopChannel(cnum);
+            }
+        }
     }
     // kill music if it is a single-play && finished
     // if (	mus_playing
@@ -617,8 +610,7 @@ void S_SetMusicVolume(int volume)
 {
     if (volume < 0 || volume > 127)
     {
-	I_Error("Attempt to set music volume at %d",
-		volume);
+	    I_Error("Attempt to set music volume at %d",volume);
     }    
 
     I_SetMusicVolume(127);
@@ -632,7 +624,7 @@ void S_SetSfxVolume(int volume)
 {
 
     if (volume < 0 || volume > 127)
-	I_Error("Attempt to set sfx volume at %d", volume);
+	    I_Error("Attempt to set sfx volume at %d", volume);
 
     snd_SfxVolume = volume;
 
@@ -654,16 +646,15 @@ S_ChangeMusic
     musicinfo_t*	music;
     char		namebuf[9];
 
-    if ( (musicnum <= mus_None)
-	 || (musicnum >= NUMMUSIC) )
+    if ( (musicnum <= mus_None) || (musicnum >= NUMMUSIC) )
     {
-	I_Error("Bad music number %d", musicnum);
+	    I_Error("Bad music number %d", musicnum);
     }
     else
-	music = &S_music[musicnum];
+	    music = &S_music[musicnum];
 
     if (mus_playing == music)
-	return;
+	    return;
 
     // shutdown old music
     S_StopMusic();
@@ -671,8 +662,8 @@ S_ChangeMusic
     // get lumpnum if neccessary
     if (!music->lumpnum)
     {
-	sprintf(namebuf, "d_%s", music->name);
-	music->lumpnum = W_GetNumForName(namebuf);
+        sprintf(namebuf, "d_%s", music->name);
+        music->lumpnum = W_GetNumForName(namebuf);
     }
 
     // load & register it
@@ -690,15 +681,15 @@ void S_StopMusic(void)
 {
     if (mus_playing)
     {
-	if (mus_paused)
-	    I_ResumeSong(mus_playing->handle);
+        if (mus_paused)
+            I_ResumeSong(mus_playing->handle);
 
-	I_StopSong(mus_playing->handle);
-	I_UnRegisterSong(mus_playing->handle);
-	Z_ChangeTag(mus_playing->data, PU_CACHE);
-	
-	mus_playing->data = 0;
-	mus_playing = 0;
+        I_StopSong(mus_playing->handle);
+        I_UnRegisterSong(mus_playing->handle);
+        Z_ChangeTag(mus_playing->data, PU_CACHE);
+        
+        mus_playing->data = 0;
+        mus_playing = 0;
     }
 }
 
@@ -713,31 +704,30 @@ void S_StopChannel(int cnum)
 
     if (c->sfxinfo)
     {
-	// stop the sound playing
-	if (I_SoundIsPlaying(c->handle))
-	{
-#ifdef SAWDEBUG
-	    if (c->sfxinfo == &S_sfx[sfx_sawful])
-		fprintf(stderr, "stopped\n");
-#endif
-	    I_StopSound(c->handle);
-	}
+        // stop the sound playing
+        if (I_SoundIsPlaying(c->handle))
+        {
+    #ifdef SAWDEBUG
+            if (c->sfxinfo == &S_sfx[sfx_sawful])
+                fprintf(stderr, "stopped\n");
+    #endif
+            I_StopSound(c->handle);
+        }
 
-	// check to see
-	//  if other channels are playing the sound
-	for (i=0 ; i<numChannels ; i++)
-	{
-	    if (cnum != i
-		&& c->sfxinfo == channels[i].sfxinfo)
-	    {
-		break;
-	    }
-	}
-	
-	// degrade usefulness of sound data
-	c->sfxinfo->usefulness--;
+        // check to see
+        //  if other channels are playing the sound
+        for (i=0 ; i<numChannels ; i++)
+        {
+            if (cnum != i && c->sfxinfo == channels[i].sfxinfo)
+            {
+                break;
+            }
+        }
+        
+        // degrade usefulness of sound data
+        c->sfxinfo->usefulness--;
 
-	c->sfxinfo = 0;
+        c->sfxinfo = 0;
     }
 }
 
@@ -770,10 +760,9 @@ S_AdjustSoundParams
     // From _GG1_ p.428. Appox. eucledian distance fast.
     approx_dist = adx + ady - ((adx < ady ? adx : ady)>>1);
     
-    if (gamemap != 8
-	&& approx_dist > S_CLIPPING_DIST)
+    if (gamemap != 8 && approx_dist > S_CLIPPING_DIST)
     {
-	return 0;
+	    return 0;
     }
     
     // angle of source to listener
@@ -783,9 +772,9 @@ S_AdjustSoundParams
 			    source->y);
 
     if (angle > listener->angle)
-	angle = angle - listener->angle;
+	    angle = angle - listener->angle;
     else
-	angle = angle + (0xffffffff - listener->angle);
+	    angle = angle + (0xffffffff - listener->angle);
 
     angle >>= ANGLETOFINESHIFT;
 
@@ -795,23 +784,19 @@ S_AdjustSoundParams
     // volume calculation
     if (approx_dist < S_CLOSE_DIST)
     {
-	*vol = snd_SfxVolume;
+	    *vol = snd_SfxVolume;
     }
     else if (gamemap == 8)
     {
-	if (approx_dist > S_CLIPPING_DIST)
-	    approx_dist = S_CLIPPING_DIST;
+        if (approx_dist > S_CLIPPING_DIST)
+            approx_dist = S_CLIPPING_DIST;
 
-	*vol = 15+ ((snd_SfxVolume-15)
-		    *((S_CLIPPING_DIST - approx_dist)>>FRACBITS))
-	    / S_ATTENUATOR;
+        *vol = 15+ ((snd_SfxVolume-15) *((S_CLIPPING_DIST - approx_dist)>>FRACBITS)) / S_ATTENUATOR;
     }
     else
     {
-	// distance effect
-	*vol = (snd_SfxVolume
-		* ((S_CLIPPING_DIST - approx_dist)>>FRACBITS))
-	    / S_ATTENUATOR; 
+        // distance effect
+        *vol = (snd_SfxVolume * ((S_CLIPPING_DIST - approx_dist)>>FRACBITS)) / S_ATTENUATOR; 
     }
     
     return (*vol > 0);
@@ -837,32 +822,32 @@ S_getChannel
     // Find an open channel
     for (cnum=0 ; cnum<numChannels ; cnum++)
     {
-	if (!channels[cnum].sfxinfo)
-	    break;
-	else if (origin &&  channels[cnum].origin ==  origin)
-	{
-	    S_StopChannel(cnum);
-	    break;
-	}
+        if (!channels[cnum].sfxinfo)
+            break;
+        else if (origin &&  channels[cnum].origin ==  origin)
+        {
+            S_StopChannel(cnum);
+            break;
+        }
     }
 
     // None available
     if (cnum == numChannels)
     {
-	// Look for lower priority
-	for (cnum=0 ; cnum<numChannels ; cnum++)
-	    if (channels[cnum].sfxinfo->priority >= sfxinfo->priority) break;
+        // Look for lower priority
+        for (cnum=0 ; cnum<numChannels ; cnum++)
+            if (channels[cnum].sfxinfo->priority >= sfxinfo->priority) break;
 
-	if (cnum == numChannels)
-	{
-	    // FUCK!  No lower priority.  Sorry, Charlie.    
-	    return -1;
-	}
-	else
-	{
-	    // Otherwise, kick out lower priority.
-	    S_StopChannel(cnum);
-	}
+        if (cnum == numChannels)
+        {
+            // FUCK!  No lower priority.  Sorry, Charlie.    
+            return -1;
+        }
+        else
+        {
+            // Otherwise, kick out lower priority.
+            S_StopChannel(cnum);
+        }
     }
 
     c = &channels[cnum];

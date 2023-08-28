@@ -501,12 +501,12 @@ void ST_refreshBackground(void)
 
     if (st_statusbaron)
     {
-	V_DrawPatch(ST_X, 0, BG, sbar);
+		V_DrawPatch(ST_X, 0, BG, sbar);
 
-	if (netgame)
-	    V_DrawPatch(ST_FX, 0, BG, faceback);
+		if (netgame)
+			V_DrawPatch(ST_FX, 0, BG, faceback);
 
-	V_CopyRect(ST_X, 0, BG, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y, FG);
+		V_CopyRect(ST_X, 0, BG, ST_WIDTH, ST_HEIGHT, ST_X, ST_Y, FG);
     }
 
 }
@@ -520,21 +520,20 @@ ST_Responder (event_t* ev)
   int		i;
     
   // Filter automap on/off.
-  if (ev->type == ev_keyup
-      && ((ev->data1 & 0xffff0000) == AM_MSGHEADER))
+  if (ev->type == ev_keyup && ((ev->data1 & 0xffff0000) == AM_MSGHEADER))
   {
-    switch(ev->data1)
-    {
-      case AM_MSGENTERED:
-	st_gamestate = AutomapState;
-	st_firsttime = true;
-	break;
-	
-      case AM_MSGEXITED:
-	//	fprintf(stderr, "AM exited\n");
-	st_gamestate = FirstPersonState;
-	break;
-    }
+		switch(ev->data1)
+		{
+			case AM_MSGENTERED:
+				st_gamestate = AutomapState;
+				st_firsttime = true;
+				break;
+			
+			case AM_MSGEXITED:
+				//	fprintf(stderr, "AM exited\n");
+				st_gamestate = FirstPersonState;
+				break;
+		}
   }
 
   // if a user keypress...
@@ -736,8 +735,8 @@ int ST_calcPainOffset(void)
 
     if (health != oldhealth)
     {
-	lastcalc = ST_FACESTRIDE * (((100 - health) * ST_NUMPAINFACES) / 101);
-	oldhealth = health;
+		lastcalc = ST_FACESTRIDE * (((100 - health) * ST_NUMPAINFACES) / 101);
+		oldhealth = health;
     }
     return lastcalc;
 }
@@ -760,161 +759,155 @@ void ST_updateFaceWidget(void)
 
     if (priority < 10)
     {
-	// dead
-	if (!plyr->health)
-	{
-	    priority = 9;
-	    st_faceindex = ST_DEADFACE;
-	    st_facecount = 1;
-	}
+		// dead
+		if (!plyr->health)
+		{
+			priority = 9;
+			st_faceindex = ST_DEADFACE;
+			st_facecount = 1;
+		}
     }
 
     if (priority < 9)
     {
-	if (plyr->bonuscount)
-	{
-	    // picking up bonus
-	    doevilgrin = false;
-
-	    for (i=0;i<NUMWEAPONS;i++)
-	    {
-		if (oldweaponsowned[i] != plyr->weaponowned[i])
+		if (plyr->bonuscount)
 		{
-		    doevilgrin = true;
-		    oldweaponsowned[i] = plyr->weaponowned[i];
+			// picking up bonus
+			doevilgrin = false;
+
+			for (i=0;i<NUMWEAPONS;i++)
+			{
+				if (oldweaponsowned[i] != plyr->weaponowned[i])
+				{
+					doevilgrin = true;
+					oldweaponsowned[i] = plyr->weaponowned[i];
+				}
+			}
+			if (doevilgrin) 
+			{
+				// evil grin if just picked up weapon
+				priority = 8;
+				st_facecount = ST_EVILGRINCOUNT;
+				st_faceindex = ST_calcPainOffset() + ST_EVILGRINOFFSET;
+			}
 		}
-	    }
-	    if (doevilgrin) 
-	    {
-		// evil grin if just picked up weapon
-		priority = 8;
-		st_facecount = ST_EVILGRINCOUNT;
-		st_faceindex = ST_calcPainOffset() + ST_EVILGRINOFFSET;
-	    }
-	}
 
     }
   
     if (priority < 8)
     {
-	if (plyr->damagecount
-	    && plyr->attacker
-	    && plyr->attacker != plyr->mo)
-	{
-	    // being attacked
-	    priority = 7;
-	    
-	    if (plyr->health - st_oldhealth > ST_MUCHPAIN)
-	    {
-		st_facecount = ST_TURNCOUNT;
-		st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
-	    }
-	    else
-	    {
-		badguyangle = R_PointToAngle2(plyr->mo->x,
-					      plyr->mo->y,
-					      plyr->attacker->x,
-					      plyr->attacker->y);
-		
-		if (badguyangle > plyr->mo->angle)
+		if (plyr->damagecount && plyr->attacker && plyr->attacker != plyr->mo)
 		{
-		    // whether right or left
-		    diffang = badguyangle - plyr->mo->angle;
-		    i = diffang > ANG180; 
-		}
-		else
-		{
-		    // whether left or right
-		    diffang = plyr->mo->angle - badguyangle;
-		    i = diffang <= ANG180; 
-		} // confusing, aint it?
+			// being attacked
+			priority = 7;
+			
+			if (plyr->health - st_oldhealth > ST_MUCHPAIN)
+			{
+				st_facecount = ST_TURNCOUNT;
+				st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
+			}
+			else
+			{
+				badguyangle = R_PointToAngle2(plyr->mo->x, plyr->mo->y, plyr->attacker->x, plyr->attacker->y);
+				
+				if (badguyangle > plyr->mo->angle)
+				{
+					// whether right or left
+					diffang = badguyangle - plyr->mo->angle;
+					i = diffang > ANG180; 
+				}
+				else
+				{
+					// whether left or right
+					diffang = plyr->mo->angle - badguyangle;
+					i = diffang <= ANG180; 
+				} // confusing, aint it?
 
-		
-		st_facecount = ST_TURNCOUNT;
-		st_faceindex = ST_calcPainOffset();
-		
-		if (diffang < ANG45)
-		{
-		    // head-on    
-		    st_faceindex += ST_RAMPAGEOFFSET;
+				
+				st_facecount = ST_TURNCOUNT;
+				st_faceindex = ST_calcPainOffset();
+				
+				if (diffang < ANG45)
+				{
+					// head-on    
+					st_faceindex += ST_RAMPAGEOFFSET;
+				}
+				else if (i)
+				{
+					// turn face right
+					st_faceindex += ST_TURNOFFSET;
+				}
+				else
+				{
+					// turn face left
+					st_faceindex += ST_TURNOFFSET+1;
+				}
+			}
 		}
-		else if (i)
-		{
-		    // turn face right
-		    st_faceindex += ST_TURNOFFSET;
-		}
-		else
-		{
-		    // turn face left
-		    st_faceindex += ST_TURNOFFSET+1;
-		}
-	    }
-	}
     }
   
     if (priority < 7)
     {
-	// getting hurt because of your own damn stupidity
-	if (plyr->damagecount)
-	{
-	    if (plyr->health - st_oldhealth > ST_MUCHPAIN)
-	    {
-		priority = 7;
-		st_facecount = ST_TURNCOUNT;
-		st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
-	    }
-	    else
-	    {
-		priority = 6;
-		st_facecount = ST_TURNCOUNT;
-		st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
-	    }
+		// getting hurt because of your own damn stupidity
+		if (plyr->damagecount)
+		{
+			if (plyr->health - st_oldhealth > ST_MUCHPAIN)
+			{
+				priority = 7;
+				st_facecount = ST_TURNCOUNT;
+				st_faceindex = ST_calcPainOffset() + ST_OUCHOFFSET;
+			}
+			else
+			{
+				priority = 6;
+				st_facecount = ST_TURNCOUNT;
+				st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
+			}
 
-	}
+		}
 
     }
   
     if (priority < 6)
     {
-	// rapid firing
-	if (plyr->attackdown)
-	{
-	    if (lastattackdown==-1)
-		lastattackdown = ST_RAMPAGEDELAY;
-	    else if (!--lastattackdown)
-	    {
-		priority = 5;
-		st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
-		st_facecount = 1;
-		lastattackdown = 1;
-	    }
-	}
-	else
-	    lastattackdown = -1;
+		// rapid firing
+		if (plyr->attackdown)
+		{
+			if (lastattackdown==-1)
+				lastattackdown = ST_RAMPAGEDELAY;
+			else if (!--lastattackdown)
+			{
+				priority = 5;
+				st_faceindex = ST_calcPainOffset() + ST_RAMPAGEOFFSET;
+				st_facecount = 1;
+				lastattackdown = 1;
+			}
+		}
+		else
+			lastattackdown = -1;
 
     }
   
     if (priority < 5)
     {
-	// invulnerability
-	if ((plyr->cheats & CF_GODMODE)
-	    || plyr->powers[pw_invulnerability])
-	{
-	    priority = 4;
+		// invulnerability
+		if ((plyr->cheats & CF_GODMODE) || plyr->powers[pw_invulnerability])
+		{
+			priority = 4;
 
-	    st_faceindex = ST_GODFACE;
-	    st_facecount = 1;
+			st_faceindex = ST_GODFACE;
+			st_facecount = 1;
 
-	}
+		}
 
     }
 
     // look left or look right if the facecount has timed out
     if (!st_facecount)
     {
-	st_faceindex = ST_calcPainOffset() + (st_randomnumber % 3);
-	st_facecount = ST_STRAIGHTFACECOUNT;
-	priority = 0;
+		st_faceindex = ST_calcPainOffset() + (st_randomnumber % 3);
+		st_facecount = ST_STRAIGHTFACECOUNT;
+		priority = 0;
     }
 
     st_facecount--;
@@ -930,9 +923,9 @@ void ST_updateWidgets(void)
     //  if (w_ready.data != plyr->readyweapon)
     //  {
     if (weaponinfo[plyr->readyweapon].ammo == am_noammo)
-	w_ready.num = &largeammo;
+		w_ready.num = &largeammo;
     else
-	w_ready.num = &plyr->ammo[weaponinfo[plyr->readyweapon].ammo];
+		w_ready.num = &plyr->ammo[weaponinfo[plyr->readyweapon].ammo];
     //{
     // static int tic=0;
     // static int dir=-1;
@@ -952,10 +945,10 @@ void ST_updateWidgets(void)
     // update keycard multiple widgets
     for (i=0;i<3;i++)
     {
-	keyboxes[i] = plyr->cards[i] ? i : -1;
+		keyboxes[i] = plyr->cards[i] ? i : -1;
 
-	if (plyr->cards[i+3])
-	    keyboxes[i] = i+3;
+		if (plyr->cards[i+3])
+			keyboxes[i] = i+3;
     }
 
     // refresh everything if this is him coming back to life
@@ -973,15 +966,15 @@ void ST_updateWidgets(void)
 
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
-	if (i != consoleplayer)
-	    st_fragscount += plyr->frags[i];
-	else
-	    st_fragscount -= plyr->frags[i];
+		if (i != consoleplayer)
+			st_fragscount += plyr->frags[i];
+		else
+			st_fragscount -= plyr->frags[i];
     }
 
     // get rid of chat window if up because of message
     if (!--st_msgcounter)
-	st_chat = st_oldchat;
+		st_chat = st_oldchat;
 
 }
 
@@ -1009,44 +1002,43 @@ void ST_doPaletteStuff(void)
 
     if (plyr->powers[pw_strength])
     {
-	// slowly fade the berzerk out
-  	bzc = 12 - (plyr->powers[pw_strength]>>6);
+		// slowly fade the berzerk out
+		bzc = 12 - (plyr->powers[pw_strength]>>6);
 
-	if (bzc > cnt)
-	    cnt = bzc;
+		if (bzc > cnt)
+			cnt = bzc;
     }
 	
     if (cnt)
     {
-	palette = (cnt+7)>>3;
-	
-	if (palette >= NUMREDPALS)
-	    palette = NUMREDPALS-1;
+		palette = (cnt+7)>>3;
+		
+		if (palette >= NUMREDPALS)
+			palette = NUMREDPALS-1;
 
-	palette += STARTREDPALS;
+		palette += STARTREDPALS;
     }
 
     else if (plyr->bonuscount)
     {
-	palette = (plyr->bonuscount+7)>>3;
+		palette = (plyr->bonuscount+7)>>3;
 
-	if (palette >= NUMBONUSPALS)
-	    palette = NUMBONUSPALS-1;
+		if (palette >= NUMBONUSPALS)
+			palette = NUMBONUSPALS-1;
 
-	palette += STARTBONUSPALS;
+		palette += STARTBONUSPALS;
     }
 
-    else if ( plyr->powers[pw_ironfeet] > 4*32
-	      || plyr->powers[pw_ironfeet]&8)
-	palette = RADIATIONPAL;
+    else if ( plyr->powers[pw_ironfeet] > 4*32 || plyr->powers[pw_ironfeet]&8)
+		palette = RADIATIONPAL;
     else
-	palette = 0;
+		palette = 0;
 
     if (palette != st_palette)
     {
-	st_palette = palette;
-	pal = (byte *) W_CacheLumpNum (lu_palette, PU_CACHE)+palette*768;
-	I_SetPalette (pal);
+		st_palette = palette;
+		pal = (byte *) W_CacheLumpNum (lu_palette, PU_CACHE)+palette*768;
+		I_SetPalette (pal);
     }
 
 }
@@ -1065,8 +1057,8 @@ void ST_drawWidgets(boolean refresh)
 
     for (i=0;i<4;i++)
     {
-	STlib_updateNum(&w_ammo[i], refresh);
-	STlib_updateNum(&w_maxammo[i], refresh);
+		STlib_updateNum(&w_ammo[i], refresh);
+		STlib_updateNum(&w_maxammo[i], refresh);
     }
 
     STlib_updatePercent(&w_health, refresh);
@@ -1075,12 +1067,12 @@ void ST_drawWidgets(boolean refresh)
     STlib_updateBinIcon(&w_armsbg, refresh);
 
     for (i=0;i<6;i++)
-	STlib_updateMultIcon(&w_arms[i], refresh);
+		STlib_updateMultIcon(&w_arms[i], refresh);
 
     STlib_updateMultIcon(&w_faces, refresh);
 
     for (i=0;i<3;i++)
-	STlib_updateMultIcon(&w_keyboxes[i], refresh);
+		STlib_updateMultIcon(&w_keyboxes[i], refresh);
 
     STlib_updateNum(&w_frags, refresh);
 
@@ -1133,11 +1125,11 @@ void ST_loadGraphics(void)
     // Load the numbers, tall and short
     for (i=0;i<10;i++)
     {
-	sprintf(namebuf, "STTNUM%d", i);
-	tallnum[i] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC);
+		sprintf(namebuf, "STTNUM%d", i);
+		tallnum[i] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC);
 
-	sprintf(namebuf, "STYSNUM%d", i);
-	shortnum[i] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC);
+		sprintf(namebuf, "STYSNUM%d", i);
+		shortnum[i] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC);
     }
 
     // Load percent key.
@@ -1147,8 +1139,8 @@ void ST_loadGraphics(void)
     // key cards
     for (i=0;i<NUMCARDS;i++)
     {
-	sprintf(namebuf, "STKEYS%d", i);
-	keys[i] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC);
+		sprintf(namebuf, "STKEYS%d", i);
+		keys[i] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC);
     }
 
     // arms background
@@ -1157,13 +1149,13 @@ void ST_loadGraphics(void)
     // arms ownership widgets
     for (i=0;i<6;i++)
     {
-	sprintf(namebuf, "STGNUM%d", i+2);
+		sprintf(namebuf, "STGNUM%d", i+2);
 
-	// gray #
-	arms[i][0] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC);
+		// gray #
+		arms[i][0] = (patch_t *) W_CacheLumpName(namebuf, PU_STATIC);
 
-	// yellow #
-	arms[i][1] = shortnum[i+2]; 
+		// yellow #
+		arms[i][1] = shortnum[i+2]; 
     }
 
     // face backgrounds for different color players
@@ -1177,21 +1169,21 @@ void ST_loadGraphics(void)
     facenum = 0;
     for (i=0;i<ST_NUMPAINFACES;i++)
     {
-	for (j=0;j<ST_NUMSTRAIGHTFACES;j++)
-	{
-	    sprintf(namebuf, "STFST%d%d", i, j);
-	    faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
-	}
-	sprintf(namebuf, "STFTR%d0", i);	// turn right
-	faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
-	sprintf(namebuf, "STFTL%d0", i);	// turn left
-	faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
-	sprintf(namebuf, "STFOUCH%d", i);	// ouch!
-	faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
-	sprintf(namebuf, "STFEVL%d", i);	// evil grin ;)
-	faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
-	sprintf(namebuf, "STFKILL%d", i);	// pissed off
-	faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
+		for (j=0;j<ST_NUMSTRAIGHTFACES;j++)
+		{
+			sprintf(namebuf, "STFST%d%d", i, j);
+			faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
+		}
+		sprintf(namebuf, "STFTR%d0", i);	// turn right
+		faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
+		sprintf(namebuf, "STFTL%d0", i);	// turn left
+		faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
+		sprintf(namebuf, "STFOUCH%d", i);	// ouch!
+		faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
+		sprintf(namebuf, "STFEVL%d", i);	// evil grin ;)
+		faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
+		sprintf(namebuf, "STFKILL%d", i);	// pissed off
+		faces[facenum++] = W_CacheLumpName(namebuf, PU_STATIC);
     }
     faces[facenum++] = W_CacheLumpName("STFGOD0", PU_STATIC);
     faces[facenum++] = W_CacheLumpName("STFDEAD0", PU_STATIC);
@@ -1212,8 +1204,8 @@ void ST_unloadGraphics(void)
     // unload the numbers, tall and short
     for (i=0;i<10;i++)
     {
-	Z_ChangeTag(tallnum[i], PU_CACHE);
-	Z_ChangeTag(shortnum[i], PU_CACHE);
+		Z_ChangeTag(tallnum[i], PU_CACHE);
+		Z_ChangeTag(shortnum[i], PU_CACHE);
     }
     // unload tall percent
     Z_ChangeTag(tallpercent, PU_CACHE); 
@@ -1223,17 +1215,17 @@ void ST_unloadGraphics(void)
 
     // unload gray #'s
     for (i=0;i<6;i++)
-	Z_ChangeTag(arms[i][0], PU_CACHE);
+		Z_ChangeTag(arms[i][0], PU_CACHE);
     
     // unload the key cards
     for (i=0;i<NUMCARDS;i++)
-	Z_ChangeTag(keys[i], PU_CACHE);
+		Z_ChangeTag(keys[i], PU_CACHE);
 
     Z_ChangeTag(sbar, PU_CACHE);
     Z_ChangeTag(faceback, PU_CACHE);
 
     for (i=0;i<ST_NUMFACES;i++)
-	Z_ChangeTag(faces[i], PU_CACHE);
+		Z_ChangeTag(faces[i], PU_CACHE);
 
     // Note: nobody ain't seen no unloading
     //   of stminus yet. Dude.
@@ -1268,10 +1260,10 @@ void ST_initData(void)
     st_oldhealth = -1;
 
     for (i=0;i<NUMWEAPONS;i++)
-	oldweaponsowned[i] = plyr->weaponowned[i];
+		oldweaponsowned[i] = plyr->weaponowned[i];
 
     for (i=0;i<3;i++)
-	keyboxes[i] = -1;
+		keyboxes[i] = -1;
 
     STlib_init();
 
@@ -1316,11 +1308,11 @@ void ST_createWidgets(void)
     // weapons owned
     for(i=0;i<6;i++)
     {
-	STlib_initMultIcon(&w_arms[i],
-			   ST_ARMSX+(i%3)*ST_ARMSXSPACE,
-			   ST_ARMSY+(i/3)*ST_ARMSYSPACE,
-			   arms[i], (int *) &plyr->weaponowned[i+1],
-			   &st_armson);
+		STlib_initMultIcon(&w_arms[i],
+				ST_ARMSX+(i%3)*ST_ARMSXSPACE,
+				ST_ARMSY+(i/3)*ST_ARMSYSPACE,
+				arms[i], (int *) &plyr->weaponowned[i+1],
+				&st_armson);
     }
 
     // frags sum
@@ -1445,7 +1437,7 @@ void ST_Start (void)
 {
 
     if (!st_stopped)
-	ST_Stop();
+		ST_Stop();
 
     ST_initData();
     ST_createWidgets();
@@ -1455,8 +1447,7 @@ void ST_Start (void)
 
 void ST_Stop (void)
 {
-    if (st_stopped)
-	return;
+    if (st_stopped) return;
 
     I_SetPalette (W_CacheLumpNum (lu_palette, PU_CACHE));
 

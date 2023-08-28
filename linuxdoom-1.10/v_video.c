@@ -179,7 +179,7 @@ V_CopyRect
 	|| (unsigned)srcscrn>4
 	|| (unsigned)destscrn>4)
     {
-	I_Error ("Bad V_CopyRect");
+	    I_Error ("Bad V_CopyRect");
     }
 #endif 
     V_MarkRect (destx, desty, width, height); 
@@ -189,9 +189,9 @@ V_CopyRect
 
     for ( ; height>0 ; height--) 
     { 
-	memcpy (dest, src, width); 
-	src += SCREENWIDTH; 
-	dest += SCREENWIDTH; 
+        memcpy (dest, src, width); 
+        src += SCREENWIDTH; 
+        dest += SCREENWIDTH; 
     } 
 } 
  
@@ -225,15 +225,15 @@ V_DrawPatch
 	|| y+SHORT(patch->height)>SCREENHEIGHT 
 	|| (unsigned)scrn>4)
     {
-      fprintf( stderr, "Patch at %d,%d exceeds LFB\n", x,y );
-      // No I_Error abort - what is up with TNT.WAD?
-      fprintf( stderr, "V_DrawPatch: bad patch (ignored)\n");
-      return;
+        fprintf( stderr, "Patch at %d,%d exceeds LFB\n", x,y );
+        // No I_Error abort - what is up with TNT.WAD?
+        fprintf( stderr, "V_DrawPatch: bad patch (ignored)\n");
+        return;
     }
 #endif 
  
     if (!scrn)
-	V_MarkRect (x, y, SHORT(patch->width), SHORT(patch->height)); 
+	    V_MarkRect (x, y, SHORT(patch->width), SHORT(patch->height)); 
 
     col = 0; 
     desttop = screens[scrn]+y*SCREENWIDTH+x; 
@@ -242,23 +242,22 @@ V_DrawPatch
 
     for ( ; col<w ; x++, col++, desttop++)
     { 
-	column = (column_t *)((byte *)patch + LONG(patch->columnofs[col])); 
- 
-	// step through the posts in a column 
-	while (column->topdelta != 0xff ) 
-	{ 
-	    source = (byte *)column + 3; 
-	    dest = desttop + column->topdelta*SCREENWIDTH; 
-	    count = column->length; 
-			 
-	    while (count--) 
-	    { 
-		*dest = *source++; 
-		dest += SCREENWIDTH; 
-	    } 
-	    column = (column_t *)(  (byte *)column + column->length 
-				    + 4 ); 
-	} 
+        column = (column_t *)((byte *)patch + LONG(patch->columnofs[col])); 
+    
+        // step through the posts in a column 
+        while (column->topdelta != 0xff ) 
+        { 
+            source = (byte *)column + 3; 
+            dest = desttop + column->topdelta*SCREENWIDTH; 
+            count = column->length; 
+                
+            while (count--) 
+            { 
+                *dest = *source++; 
+                dest += SCREENWIDTH; 
+            } 
+            column = (column_t *) ((byte *)column + column->length + 4); 
+        } 
     }			 
 } 
  
@@ -292,13 +291,13 @@ V_DrawPatchFlipped
 	|| y+SHORT(patch->height)>SCREENHEIGHT 
 	|| (unsigned)scrn>4)
     {
-      fprintf( stderr, "Patch origin %d,%d exceeds LFB\n", x,y );
-      I_Error ("Bad V_DrawPatch in V_DrawPatchFlipped");
+        fprintf( stderr, "Patch origin %d,%d exceeds LFB\n", x,y );
+        I_Error ("Bad V_DrawPatch in V_DrawPatchFlipped");
     }
 #endif 
  
     if (!scrn)
-	V_MarkRect (x, y, SHORT(patch->width), SHORT(patch->height)); 
+	    V_MarkRect (x, y, SHORT(patch->width), SHORT(patch->height)); 
 
     col = 0; 
     desttop = screens[scrn]+y*SCREENWIDTH+x; 
@@ -307,23 +306,22 @@ V_DrawPatchFlipped
 
     for ( ; col<w ; x++, col++, desttop++) 
     { 
-	column = (column_t *)((byte *)patch + LONG(patch->columnofs[w-1-col])); 
- 
-	// step through the posts in a column 
-	while (column->topdelta != 0xff ) 
-	{ 
-	    source = (byte *)column + 3; 
-	    dest = desttop + column->topdelta*SCREENWIDTH; 
-	    count = column->length; 
-			 
-	    while (count--) 
-	    { 
-		*dest = *source++; 
-		dest += SCREENWIDTH; 
-	    } 
-	    column = (column_t *)(  (byte *)column + column->length 
-				    + 4 ); 
-	} 
+        column = (column_t *)((byte *)patch + LONG(patch->columnofs[w-1-col])); 
+    
+        // step through the posts in a column 
+        while (column->topdelta != 0xff ) 
+        { 
+            source = (byte *)column + 3; 
+            dest = desttop + column->topdelta*SCREENWIDTH; 
+            count = column->length; 
+                
+            while (count--) 
+            { 
+                *dest = *source++; 
+                dest += SCREENWIDTH; 
+            } 
+            column = (column_t *)((byte *)column + column->length + 4); 
+        } 
     }			 
 } 
  
@@ -419,7 +417,7 @@ V_DrawBlock
 	|| y+height>SCREENHEIGHT 
 	|| (unsigned)scrn>4 )
     {
-	I_Error ("Bad V_DrawBlock");
+	    I_Error ("Bad V_DrawBlock");
     }
 #endif 
  
@@ -429,9 +427,9 @@ V_DrawBlock
 
     while (height--) 
     { 
-	memcpy (dest, src, width); 
-	src += width; 
-	dest += SCREENWIDTH; 
+        memcpy (dest, src, width); 
+        src += width; 
+        dest += SCREENWIDTH; 
     } 
 } 
  
@@ -459,7 +457,7 @@ V_GetBlock
 	|| y+height>SCREENHEIGHT 
 	|| (unsigned)scrn>4 )
     {
-	I_Error ("Bad V_DrawBlock");
+	    I_Error ("Bad V_DrawBlock");
     }
 #endif 
  
@@ -467,9 +465,9 @@ V_GetBlock
 
     while (height--) 
     { 
-	memcpy (dest, src, width); 
-	src += SCREENWIDTH; 
-	dest += width; 
+        memcpy (dest, src, width); 
+        src += SCREENWIDTH; 
+        dest += width; 
     } 
 } 
 
@@ -489,5 +487,5 @@ void V_Init (void)
     base = I_AllocLow (SCREENWIDTH*SCREENHEIGHT*4);
 
     for (i=0 ; i<4 ; i++)
-	screens[i] = base + i*SCREENWIDTH*SCREENHEIGHT;
+	    screens[i] = base + i*SCREENWIDTH*SCREENHEIGHT;
 }

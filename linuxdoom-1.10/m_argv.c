@@ -27,7 +27,7 @@ rcsid[] = "$Id: m_argv.c,v 1.1 1997/02/03 22:45:10 b1 Exp $";
 #include <string.h>
 
 int		myargc;
-char**		myargv;
+char**	myargv;
 
 
 
@@ -40,12 +40,11 @@ char**		myargv;
 // or 0 if not present
 int M_CheckParm (char *check)
 {
-    int		i;
+    int	i;
 
-    for (i = 1;i<myargc;i++)
+    for (i = 1; i < myargc; i++)
     {
-	if ( !strcasecmp(check, myargv[i]) )
-	    return i;
+        if (!strcasecmp(check, myargv[i])) return i;
     }
 
     return 0;

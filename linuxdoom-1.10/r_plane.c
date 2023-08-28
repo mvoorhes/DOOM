@@ -129,27 +129,24 @@ R_MapPlane
     unsigned	index;
 	
 #ifdef RANGECHECK
-    if (x2 < x1
-	|| x1<0
-	|| x2>=viewwidth
-	|| (unsigned)y>viewheight)
+    if (x2 < x1 || x1<0 || x2>=viewwidth || (unsigned)y>viewheight)
     {
-	I_Error ("R_MapPlane: %i, %i at %i",x1,x2,y);
+	    I_Error ("R_MapPlane: %i, %i at %i",x1,x2,y);
     }
 #endif
 
     if (planeheight != cachedheight[y])
     {
-	cachedheight[y] = planeheight;
-	distance = cacheddistance[y] = FixedMul (planeheight, yslope[y]);
-	ds_xstep = cachedxstep[y] = FixedMul (distance,basexscale);
-	ds_ystep = cachedystep[y] = FixedMul (distance,baseyscale);
+        cachedheight[y] = planeheight;
+        distance = cacheddistance[y] = FixedMul (planeheight, yslope[y]);
+        ds_xstep = cachedxstep[y] = FixedMul (distance,basexscale);
+        ds_ystep = cachedystep[y] = FixedMul (distance,baseyscale);
     }
     else
     {
-	distance = cacheddistance[y];
-	ds_xstep = cachedxstep[y];
-	ds_ystep = cachedystep[y];
+        distance = cacheddistance[y];
+        ds_xstep = cachedxstep[y];
+        ds_ystep = cachedystep[y];
     }
 	
     length = FixedMul (distance,distscale[x1]);
@@ -158,15 +155,15 @@ R_MapPlane
     ds_yfrac = -viewy - FixedMul(finesine[angle], length);
 
     if (fixedcolormap)
-	ds_colormap = fixedcolormap;
+	    ds_colormap = fixedcolormap;
     else
     {
-	index = distance >> LIGHTZSHIFT;
-	
-	if (index >= MAXLIGHTZ )
-	    index = MAXLIGHTZ-1;
+        index = distance >> LIGHTZSHIFT;
+        
+        if (index >= MAXLIGHTZ )
+            index = MAXLIGHTZ-1;
 
-	ds_colormap = planezlight[index];
+        ds_colormap = planezlight[index];
     }
 	
     ds_y = y;
@@ -190,8 +187,8 @@ void R_ClearPlanes (void)
     // opening / clipping determination
     for (i=0 ; i<viewwidth ; i++)
     {
-	floorclip[i] = viewheight;
-	ceilingclip[i] = -1;
+        floorclip[i] = viewheight;
+        ceilingclip[i] = -1;
     }
 
     lastvisplane = visplanes;
@@ -224,23 +221,20 @@ R_FindPlane
 	
     if (picnum == skyflatnum)
     {
-	height = 0;			// all skys map together
-	lightlevel = 0;
+        height = 0;			// all skys map together
+        lightlevel = 0;
     }
 	
     for (check=visplanes; check<lastvisplane; check++)
     {
-	if (height == check->height
-	    && picnum == check->picnum
-	    && lightlevel == check->lightlevel)
-	{
-	    break;
-	}
+        if (height == check->height && picnum == check->picnum && lightlevel == check->lightlevel)
+        {
+            break;
+        }
     }
     
 			
-    if (check < lastvisplane)
-	return check;
+    if (check < lastvisplane) return check;
 		
     if (lastvisplane - visplanes == MAXVISPLANES)
 	I_Error ("R_FindPlane: no more visplanes");
@@ -276,37 +270,37 @@ R_CheckPlane
 	
     if (start < pl->minx)
     {
-	intrl = pl->minx;
-	unionl = start;
+        intrl = pl->minx;
+        unionl = start;
     }
     else
     {
-	unionl = pl->minx;
-	intrl = start;
+        unionl = pl->minx;
+        intrl = start;
     }
 	
     if (stop > pl->maxx)
     {
-	intrh = pl->maxx;
-	unionh = stop;
+        intrh = pl->maxx;
+        unionh = stop;
     }
     else
     {
-	unionh = pl->maxx;
-	intrh = stop;
+        unionh = pl->maxx;
+        intrh = stop;
     }
 
     for (x=intrl ; x<= intrh ; x++)
-	if (pl->top[x] != 0xff)
-	    break;
+        if (pl->top[x] != 0xff)
+            break;
 
     if (x > intrh)
     {
-	pl->minx = unionl;
-	pl->maxx = unionh;
+        pl->minx = unionl;
+        pl->maxx = unionh;
 
-	// use the same one
-	return pl;		
+        // use the same one
+        return pl;		
     }
 	
     // make a new visplane
@@ -337,24 +331,24 @@ R_MakeSpans
 {
     while (t1 < t2 && t1<=b1)
     {
-	R_MapPlane (t1,spanstart[t1],x-1);
-	t1++;
+        R_MapPlane (t1,spanstart[t1],x-1);
+        t1++;
     }
     while (b1 > b2 && b1>=t1)
     {
-	R_MapPlane (b1,spanstart[b1],x-1);
-	b1--;
+        R_MapPlane (b1,spanstart[b1],x-1);
+        b1--;
     }
 	
     while (t2 < t1 && t2<=b2)
     {
-	spanstart[t2] = x;
-	t2++;
+        spanstart[t2] = x;
+        t2++;
     }
     while (b2 > b1 && b2>=t2)
     {
-	spanstart[b2] = x;
-	b2--;
+        spanstart[b2] = x;
+        b2--;
     }
 }
 
@@ -374,80 +368,71 @@ void R_DrawPlanes (void)
 				
 #ifdef RANGECHECK
     if (ds_p - drawsegs > MAXDRAWSEGS)
-	I_Error ("R_DrawPlanes: drawsegs overflow (%i)",
-		 ds_p - drawsegs);
+	    I_Error ("R_DrawPlanes: drawsegs overflow (%i)",ds_p - drawsegs);
     
     if (lastvisplane - visplanes > MAXVISPLANES)
-	I_Error ("R_DrawPlanes: visplane overflow (%i)",
-		 lastvisplane - visplanes);
+	    I_Error ("R_DrawPlanes: visplane overflow (%i)",lastvisplane - visplanes);
     
     if (lastopening - openings > MAXOPENINGS)
-	I_Error ("R_DrawPlanes: opening overflow (%i)",
-		 lastopening - openings);
+	    I_Error ("R_DrawPlanes: opening overflow (%i)",lastopening - openings);
 #endif
 
     for (pl = visplanes ; pl < lastvisplane ; pl++)
     {
-	if (pl->minx > pl->maxx)
-	    continue;
+        if (pl->minx > pl->maxx) continue;
 
-	
-	// sky flat
-	if (pl->picnum == skyflatnum)
-	{
-	    dc_iscale = pspriteiscale>>detailshift;
-	    
-	    // Sky is allways drawn full bright,
-	    //  i.e. colormaps[0] is used.
-	    // Because of this hack, sky is not affected
-	    //  by INVUL inverse mapping.
-	    dc_colormap = colormaps;
-	    dc_texturemid = skytexturemid;
-	    for (x=pl->minx ; x <= pl->maxx ; x++)
-	    {
-		dc_yl = pl->top[x];
-		dc_yh = pl->bottom[x];
+        
+        // sky flat
+        if (pl->picnum == skyflatnum)
+        {
+            dc_iscale = pspriteiscale>>detailshift;
+            
+            // Sky is allways drawn full bright,
+            //  i.e. colormaps[0] is used.
+            // Because of this hack, sky is not affected
+            //  by INVUL inverse mapping.
+            dc_colormap = colormaps;
+            dc_texturemid = skytexturemid;
+            for (x=pl->minx ; x <= pl->maxx ; x++)
+            {
+                dc_yl = pl->top[x];
+                dc_yh = pl->bottom[x];
 
-		if (dc_yl <= dc_yh)
-		{
-		    angle = (viewangle + xtoviewangle[x])>>ANGLETOSKYSHIFT;
-		    dc_x = x;
-		    dc_source = R_GetColumn(skytexture, angle);
-		    colfunc ();
-		}
-	    }
-	    continue;
-	}
-	
-	// regular flat
-	ds_source = W_CacheLumpNum(firstflat +
-				   flattranslation[pl->picnum],
-				   PU_STATIC);
-	
-	planeheight = abs(pl->height-viewz);
-	light = (pl->lightlevel >> LIGHTSEGSHIFT)+extralight;
+                if (dc_yl <= dc_yh)
+                {
+                    angle = (viewangle + xtoviewangle[x])>>ANGLETOSKYSHIFT;
+                    dc_x = x;
+                    dc_source = R_GetColumn(skytexture, angle);
+                    colfunc ();
+                }
+            }
+            continue;
+        }
+        
+        // regular flat
+        ds_source = W_CacheLumpNum(firstflat + flattranslation[pl->picnum],PU_STATIC);
+        
+        planeheight = abs(pl->height-viewz);
+        light = (pl->lightlevel >> LIGHTSEGSHIFT)+extralight;
 
-	if (light >= LIGHTLEVELS)
-	    light = LIGHTLEVELS-1;
+        if (light >= LIGHTLEVELS)
+            light = LIGHTLEVELS-1;
 
-	if (light < 0)
-	    light = 0;
+        if (light < 0)
+            light = 0;
 
-	planezlight = zlight[light];
+        planezlight = zlight[light];
 
-	pl->top[pl->maxx+1] = 0xff;
-	pl->top[pl->minx-1] = 0xff;
-		
-	stop = pl->maxx + 1;
+        pl->top[pl->maxx+1] = 0xff;
+        pl->top[pl->minx-1] = 0xff;
+            
+        stop = pl->maxx + 1;
 
-	for (x=pl->minx ; x<= stop ; x++)
-	{
-	    R_MakeSpans(x,pl->top[x-1],
-			pl->bottom[x-1],
-			pl->top[x],
-			pl->bottom[x]);
-	}
-	
-	Z_ChangeTag (ds_source, PU_CACHE);
+        for (x=pl->minx ; x<= stop ; x++)
+        {
+            R_MakeSpans(x,pl->top[x-1],pl->bottom[x-1],pl->top[x],pl->bottom[x]);
+        }
+        
+        Z_ChangeTag (ds_source, PU_CACHE);
     }
 }

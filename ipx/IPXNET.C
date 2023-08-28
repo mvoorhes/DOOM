@@ -2,10 +2,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <dos.h>
+// #include <dos.h>
 #include <string.h>
-#include <process.h>
-#include <values.h>
+// #include <process.h>
+// #include <values.h>
 
 #include "ipxnet.h"
 
@@ -158,7 +158,7 @@ void InitNetwork (void)
 void ShutdownNetwork (void)
 {
 	if (IPX)
-			CloseSocket (socketid);
+		CloseSocket (socketid);
 }
 
 

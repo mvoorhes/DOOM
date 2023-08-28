@@ -143,8 +143,8 @@ void P_LoadVertexes (int lump)
     // internal representation as fixed.
     for (i=0 ; i<numvertexes ; i++, li++, ml++)
     {
-	li->x = SHORT(ml->x)<<FRACBITS;
-	li->y = SHORT(ml->y)<<FRACBITS;
+        li->x = SHORT(ml->x)<<FRACBITS;
+        li->y = SHORT(ml->y)<<FRACBITS;
     }
 
     // Free buffer memory.
@@ -175,21 +175,21 @@ void P_LoadSegs (int lump)
     li = segs;
     for (i=0 ; i<numsegs ; i++, li++, ml++)
     {
-	li->v1 = &vertexes[SHORT(ml->v1)];
-	li->v2 = &vertexes[SHORT(ml->v2)];
-					
-	li->angle = (SHORT(ml->angle))<<16;
-	li->offset = (SHORT(ml->offset))<<16;
-	linedef = SHORT(ml->linedef);
-	ldef = &lines[linedef];
-	li->linedef = ldef;
-	side = SHORT(ml->side);
-	li->sidedef = &sides[ldef->sidenum[side]];
-	li->frontsector = sides[ldef->sidenum[side]].sector;
-	if (ldef-> flags & ML_TWOSIDED)
-	    li->backsector = sides[ldef->sidenum[side^1]].sector;
-	else
-	    li->backsector = 0;
+        li->v1 = &vertexes[SHORT(ml->v1)];
+        li->v2 = &vertexes[SHORT(ml->v2)];
+                        
+        li->angle = (SHORT(ml->angle))<<16;
+        li->offset = (SHORT(ml->offset))<<16;
+        linedef = SHORT(ml->linedef);
+        ldef = &lines[linedef];
+        li->linedef = ldef;
+        side = SHORT(ml->side);
+        li->sidedef = &sides[ldef->sidenum[side]];
+        li->frontsector = sides[ldef->sidenum[side]].sector;
+        if (ldef-> flags & ML_TWOSIDED)
+            li->backsector = sides[ldef->sidenum[side^1]].sector;
+        else
+            li->backsector = 0;
     }
 	
     Z_Free (data);
@@ -216,8 +216,8 @@ void P_LoadSubsectors (int lump)
     
     for (i=0 ; i<numsubsectors ; i++, ss++, ms++)
     {
-	ss->numlines = SHORT(ms->numsegs);
-	ss->firstline = SHORT(ms->firstseg);
+        ss->numlines = SHORT(ms->numsegs);
+        ss->firstline = SHORT(ms->firstseg);
     }
 	
     Z_Free (data);
@@ -244,14 +244,14 @@ void P_LoadSectors (int lump)
     ss = sectors;
     for (i=0 ; i<numsectors ; i++, ss++, ms++)
     {
-	ss->floorheight = SHORT(ms->floorheight)<<FRACBITS;
-	ss->ceilingheight = SHORT(ms->ceilingheight)<<FRACBITS;
-	ss->floorpic = R_FlatNumForName(ms->floorpic);
-	ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
-	ss->lightlevel = SHORT(ms->lightlevel);
-	ss->special = SHORT(ms->special);
-	ss->tag = SHORT(ms->tag);
-	ss->thinglist = NULL;
+        ss->floorheight = SHORT(ms->floorheight)<<FRACBITS;
+        ss->ceilingheight = SHORT(ms->ceilingheight)<<FRACBITS;
+        ss->floorpic = R_FlatNumForName(ms->floorpic);
+        ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
+        ss->lightlevel = SHORT(ms->lightlevel);
+        ss->special = SHORT(ms->special);
+        ss->tag = SHORT(ms->tag);
+        ss->thinglist = NULL;
     }
 	
     Z_Free (data);
@@ -279,16 +279,16 @@ void P_LoadNodes (int lump)
     
     for (i=0 ; i<numnodes ; i++, no++, mn++)
     {
-	no->x = SHORT(mn->x)<<FRACBITS;
-	no->y = SHORT(mn->y)<<FRACBITS;
-	no->dx = SHORT(mn->dx)<<FRACBITS;
-	no->dy = SHORT(mn->dy)<<FRACBITS;
-	for (j=0 ; j<2 ; j++)
-	{
-	    no->children[j] = SHORT(mn->children[j]);
-	    for (k=0 ; k<4 ; k++)
-		no->bbox[j][k] = SHORT(mn->bbox[j][k])<<FRACBITS;
-	}
+        no->x = SHORT(mn->x)<<FRACBITS;
+        no->y = SHORT(mn->y)<<FRACBITS;
+        no->dx = SHORT(mn->dx)<<FRACBITS;
+        no->dy = SHORT(mn->dy)<<FRACBITS;
+        for (j=0 ; j<2 ; j++)
+        {
+            no->children[j] = SHORT(mn->children[j]);
+            for (k=0 ; k<4 ; k++)
+                no->bbox[j][k] = SHORT(mn->bbox[j][k])<<FRACBITS;
+        }
     }
 	
     Z_Free (data);
@@ -312,38 +312,38 @@ void P_LoadThings (int lump)
     mt = (mapthing_t *)data;
     for (i=0 ; i<numthings ; i++, mt++)
     {
-	spawn = true;
+        spawn = true;
 
-	// Do not spawn cool, new monsters if !commercial
-	if ( gamemode != commercial)
-	{
-	    switch(mt->type)
-	    {
-	      case 68:	// Arachnotron
-	      case 64:	// Archvile
-	      case 88:	// Boss Brain
-	      case 89:	// Boss Shooter
-	      case 69:	// Hell Knight
-	      case 67:	// Mancubus
-	      case 71:	// Pain Elemental
-	      case 65:	// Former Human Commando
-	      case 66:	// Revenant
-	      case 84:	// Wolf SS
-		spawn = false;
-		break;
-	    }
-	}
-	if (spawn == false)
-	    break;
+        // Do not spawn cool, new monsters if !commercial
+        if ( gamemode != commercial)
+        {
+            switch(mt->type)
+            {
+                case 68:	// Arachnotron
+                case 64:	// Archvile
+                case 88:	// Boss Brain
+                case 89:	// Boss Shooter
+                case 69:	// Hell Knight
+                case 67:	// Mancubus
+                case 71:	// Pain Elemental
+                case 65:	// Former Human Commando
+                case 66:	// Revenant
+                case 84:	// Wolf SS
+                    spawn = false;
+                    break;
+            }
+        }
+        if (spawn == false)
+            break;
 
-	// Do spawn all other stuff. 
-	mt->x = SHORT(mt->x);
-	mt->y = SHORT(mt->y);
-	mt->angle = SHORT(mt->angle);
-	mt->type = SHORT(mt->type);
-	mt->options = SHORT(mt->options);
-	
-	P_SpawnMapThing (mt);
+        // Do spawn all other stuff. 
+        mt->x = SHORT(mt->x);
+        mt->y = SHORT(mt->y);
+        mt->angle = SHORT(mt->angle);
+        mt->type = SHORT(mt->type);
+        mt->options = SHORT(mt->options);
+        
+        P_SpawnMapThing (mt);
     }
 	
     Z_Free (data);
@@ -372,60 +372,60 @@ void P_LoadLineDefs (int lump)
     ld = lines;
     for (i=0 ; i<numlines ; i++, mld++, ld++)
     {
-	ld->flags = SHORT(mld->flags);
-	ld->special = SHORT(mld->special);
-	ld->tag = SHORT(mld->tag);
-	v1 = ld->v1 = &vertexes[SHORT(mld->v1)];
-	v2 = ld->v2 = &vertexes[SHORT(mld->v2)];
-	ld->dx = v2->x - v1->x;
-	ld->dy = v2->y - v1->y;
-	
-	if (!ld->dx)
-	    ld->slopetype = ST_VERTICAL;
-	else if (!ld->dy)
-	    ld->slopetype = ST_HORIZONTAL;
-	else
-	{
-	    if (FixedDiv (ld->dy , ld->dx) > 0)
-		ld->slopetype = ST_POSITIVE;
-	    else
-		ld->slopetype = ST_NEGATIVE;
-	}
-		
-	if (v1->x < v2->x)
-	{
-	    ld->bbox[BOXLEFT] = v1->x;
-	    ld->bbox[BOXRIGHT] = v2->x;
-	}
-	else
-	{
-	    ld->bbox[BOXLEFT] = v2->x;
-	    ld->bbox[BOXRIGHT] = v1->x;
-	}
+        ld->flags = SHORT(mld->flags);
+        ld->special = SHORT(mld->special);
+        ld->tag = SHORT(mld->tag);
+        v1 = ld->v1 = &vertexes[SHORT(mld->v1)];
+        v2 = ld->v2 = &vertexes[SHORT(mld->v2)];
+        ld->dx = v2->x - v1->x;
+        ld->dy = v2->y - v1->y;
+        
+        if (!ld->dx)
+            ld->slopetype = ST_VERTICAL;
+        else if (!ld->dy)
+            ld->slopetype = ST_HORIZONTAL;
+        else
+        {
+            if (FixedDiv (ld->dy , ld->dx) > 0)
+                ld->slopetype = ST_POSITIVE;
+            else
+                ld->slopetype = ST_NEGATIVE;
+        }
+            
+        if (v1->x < v2->x)
+        {
+            ld->bbox[BOXLEFT] = v1->x;
+            ld->bbox[BOXRIGHT] = v2->x;
+        }
+        else
+        {
+            ld->bbox[BOXLEFT] = v2->x;
+            ld->bbox[BOXRIGHT] = v1->x;
+        }
 
-	if (v1->y < v2->y)
-	{
-	    ld->bbox[BOXBOTTOM] = v1->y;
-	    ld->bbox[BOXTOP] = v2->y;
-	}
-	else
-	{
-	    ld->bbox[BOXBOTTOM] = v2->y;
-	    ld->bbox[BOXTOP] = v1->y;
-	}
+        if (v1->y < v2->y)
+        {
+            ld->bbox[BOXBOTTOM] = v1->y;
+            ld->bbox[BOXTOP] = v2->y;
+        }
+        else
+        {
+            ld->bbox[BOXBOTTOM] = v2->y;
+            ld->bbox[BOXTOP] = v1->y;
+        }
 
-	ld->sidenum[0] = SHORT(mld->sidenum[0]);
-	ld->sidenum[1] = SHORT(mld->sidenum[1]);
+        ld->sidenum[0] = SHORT(mld->sidenum[0]);
+        ld->sidenum[1] = SHORT(mld->sidenum[1]);
 
-	if (ld->sidenum[0] != -1)
-	    ld->frontsector = sides[ld->sidenum[0]].sector;
-	else
-	    ld->frontsector = 0;
+        if (ld->sidenum[0] != -1)
+            ld->frontsector = sides[ld->sidenum[0]].sector;
+        else
+            ld->frontsector = 0;
 
-	if (ld->sidenum[1] != -1)
-	    ld->backsector = sides[ld->sidenum[1]].sector;
-	else
-	    ld->backsector = 0;
+        if (ld->sidenum[1] != -1)
+            ld->backsector = sides[ld->sidenum[1]].sector;
+        else
+            ld->backsector = 0;
     }
 	
     Z_Free (data);
@@ -451,12 +451,12 @@ void P_LoadSideDefs (int lump)
     sd = sides;
     for (i=0 ; i<numsides ; i++, msd++, sd++)
     {
-	sd->textureoffset = SHORT(msd->textureoffset)<<FRACBITS;
-	sd->rowoffset = SHORT(msd->rowoffset)<<FRACBITS;
-	sd->toptexture = R_TextureNumForName(msd->toptexture);
-	sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
-	sd->midtexture = R_TextureNumForName(msd->midtexture);
-	sd->sector = &sectors[SHORT(msd->sector)];
+        sd->textureoffset = SHORT(msd->textureoffset)<<FRACBITS;
+        sd->rowoffset = SHORT(msd->rowoffset)<<FRACBITS;
+        sd->toptexture = R_TextureNumForName(msd->toptexture);
+        sd->bottomtexture = R_TextureNumForName(msd->bottomtexture);
+        sd->midtexture = R_TextureNumForName(msd->midtexture);
+        sd->sector = &sectors[SHORT(msd->sector)];
     }
 	
     Z_Free (data);
@@ -476,7 +476,7 @@ void P_LoadBlockMap (int lump)
     count = W_LumpLength (lump)/2;
 
     for (i=0 ; i<count ; i++)
-	blockmaplump[i] = SHORT(blockmaplump[i]);
+	    blockmaplump[i] = SHORT(blockmaplump[i]);
 		
     bmaporgx = blockmaplump[0]<<FRACBITS;
     bmaporgy = blockmaplump[1]<<FRACBITS;
@@ -513,8 +513,8 @@ void P_GroupLines (void)
     ss = subsectors;
     for (i=0 ; i<numsubsectors ; i++, ss++)
     {
-	seg = &segs[ss->firstline];
-	ss->sector = seg->sidedef->sector;
+        seg = &segs[ss->firstline];
+        ss->sector = seg->sidedef->sector;
     }
 
     // count number of lines in each sector
@@ -522,14 +522,14 @@ void P_GroupLines (void)
     total = 0;
     for (i=0 ; i<numlines ; i++, li++)
     {
-	total++;
-	li->frontsector->linecount++;
+        total++;
+        li->frontsector->linecount++;
 
-	if (li->backsector && li->backsector != li->frontsector)
-	{
-	    li->backsector->linecount++;
-	    total++;
-	}
+        if (li->backsector && li->backsector != li->frontsector)
+        {
+            li->backsector->linecount++;
+            total++;
+        }
     }
 	
     // build line tables for each sector	
@@ -537,41 +537,41 @@ void P_GroupLines (void)
     sector = sectors;
     for (i=0 ; i<numsectors ; i++, sector++)
     {
-	M_ClearBox (bbox);
-	sector->lines = linebuffer;
-	li = lines;
-	for (j=0 ; j<numlines ; j++, li++)
-	{
-	    if (li->frontsector == sector || li->backsector == sector)
-	    {
-		*linebuffer++ = li;
-		M_AddToBox (bbox, li->v1->x, li->v1->y);
-		M_AddToBox (bbox, li->v2->x, li->v2->y);
-	    }
-	}
-	if (linebuffer - sector->lines != sector->linecount)
-	    I_Error ("P_GroupLines: miscounted");
-			
-	// set the degenmobj_t to the middle of the bounding box
-	sector->soundorg.x = (bbox[BOXRIGHT]+bbox[BOXLEFT])/2;
-	sector->soundorg.y = (bbox[BOXTOP]+bbox[BOXBOTTOM])/2;
-		
-	// adjust bounding box to map blocks
-	block = (bbox[BOXTOP]-bmaporgy+MAXRADIUS)>>MAPBLOCKSHIFT;
-	block = block >= bmapheight ? bmapheight-1 : block;
-	sector->blockbox[BOXTOP]=block;
+        M_ClearBox (bbox);
+        sector->lines = linebuffer;
+        li = lines;
+        for (j=0 ; j<numlines ; j++, li++)
+        {
+            if (li->frontsector == sector || li->backsector == sector)
+            {
+                *linebuffer++ = li;
+                M_AddToBox (bbox, li->v1->x, li->v1->y);
+                M_AddToBox (bbox, li->v2->x, li->v2->y);
+            }
+        }
+        if (linebuffer - sector->lines != sector->linecount)
+            I_Error ("P_GroupLines: miscounted");
+                
+        // set the degenmobj_t to the middle of the bounding box
+        sector->soundorg.x = (bbox[BOXRIGHT]+bbox[BOXLEFT])/2;
+        sector->soundorg.y = (bbox[BOXTOP]+bbox[BOXBOTTOM])/2;
+            
+        // adjust bounding box to map blocks
+        block = (bbox[BOXTOP]-bmaporgy+MAXRADIUS)>>MAPBLOCKSHIFT;
+        block = block >= bmapheight ? bmapheight-1 : block;
+        sector->blockbox[BOXTOP]=block;
 
-	block = (bbox[BOXBOTTOM]-bmaporgy-MAXRADIUS)>>MAPBLOCKSHIFT;
-	block = block < 0 ? 0 : block;
-	sector->blockbox[BOXBOTTOM]=block;
+        block = (bbox[BOXBOTTOM]-bmaporgy-MAXRADIUS)>>MAPBLOCKSHIFT;
+        block = block < 0 ? 0 : block;
+        sector->blockbox[BOXBOTTOM]=block;
 
-	block = (bbox[BOXRIGHT]-bmaporgx+MAXRADIUS)>>MAPBLOCKSHIFT;
-	block = block >= bmapwidth ? bmapwidth-1 : block;
-	sector->blockbox[BOXRIGHT]=block;
+        block = (bbox[BOXRIGHT]-bmaporgx+MAXRADIUS)>>MAPBLOCKSHIFT;
+        block = block >= bmapwidth ? bmapwidth-1 : block;
+        sector->blockbox[BOXRIGHT]=block;
 
-	block = (bbox[BOXLEFT]-bmaporgx-MAXRADIUS)>>MAPBLOCKSHIFT;
-	block = block < 0 ? 0 : block;
-	sector->blockbox[BOXLEFT]=block;
+        block = (bbox[BOXLEFT]-bmaporgx-MAXRADIUS)>>MAPBLOCKSHIFT;
+        block = block < 0 ? 0 : block;
+        sector->blockbox[BOXLEFT]=block;
     }
 	
 }
@@ -580,12 +580,7 @@ void P_GroupLines (void)
 //
 // P_SetupLevel
 //
-void
-P_SetupLevel
-( int		episode,
-  int		map,
-  int		playermask,
-  skill_t	skill)
+void P_SetupLevel (int episode, int map, int playermask, skill_t skill)
 {
     int		i;
     char	lumpname[9];
@@ -595,8 +590,7 @@ P_SetupLevel
     wminfo.partime = 180;
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
-	players[i].killcount = players[i].secretcount 
-	    = players[i].itemcount = 0;
+        players[i].killcount = players[i].secretcount = players[i].itemcount = 0;
     }
 
     // Initial height of PointOfView
@@ -627,18 +621,18 @@ P_SetupLevel
     // find map name
     if ( gamemode == commercial)
     {
-	if (map<10)
-	    sprintf (lumpname,"map0%i", map);
-	else
-	    sprintf (lumpname,"map%i", map);
+        if (map<10)
+            sprintf (lumpname,"map0%i", map);
+        else
+            sprintf (lumpname,"map%i", map);
     }
     else
     {
-	lumpname[0] = 'E';
-	lumpname[1] = '0' + episode;
-	lumpname[2] = 'M';
-	lumpname[3] = '0' + map;
-	lumpname[4] = 0;
+        lumpname[0] = 'E';
+        lumpname[1] = '0' + episode;
+        lumpname[2] = 'M';
+        lumpname[3] = '0' + map;
+        lumpname[4] = 0;
     }
 
     lumpnum = W_GetNumForName (lumpname);
@@ -666,13 +660,13 @@ P_SetupLevel
     // if deathmatch, randomly spawn the active players
     if (deathmatch)
     {
-	for (i=0 ; i<MAXPLAYERS ; i++)
-	    if (playeringame[i])
-	    {
-		players[i].mo = NULL;
-		G_DeathMatchSpawnPlayer (i);
-	    }
-			
+        for (i=0 ; i<MAXPLAYERS ; i++) {
+            if (playeringame[i])
+            {
+                players[i].mo = NULL;
+                G_DeathMatchSpawnPlayer (i);
+            }
+        }    
     }
 
     // clear special respawning que
@@ -686,7 +680,7 @@ P_SetupLevel
 
     // preload graphics
     if (precache)
-	R_PrecacheLevel ();
+	    R_PrecacheLevel ();
 
     //printf ("free memory: 0x%x\n", Z_FreeMemory());
 

@@ -66,34 +66,30 @@ rcsid[] = "$Id: m_misc.c,v 1.6 1997/02/03 22:45:10 b1 Exp $";
 //
 extern patch_t*		hu_font[HU_FONTSIZE];
 
-int
-M_DrawText
-( int		x,
-  int		y,
-  boolean	direct,
-  char*		string )
+int M_DrawText (int x, int y, boolean direct, char* string)
 {
     int 	c;
     int		w;
 
     while (*string)
     {
-	c = toupper(*string) - HU_FONTSTART;
-	string++;
-	if (c < 0 || c> HU_FONTSIZE)
-	{
-	    x += 4;
-	    continue;
-	}
-		
-	w = SHORT (hu_font[c]->width);
-	if (x+w > SCREENWIDTH)
-	    break;
-	if (direct)
-	    V_DrawPatchDirect(x, y, 0, hu_font[c]);
-	else
-	    V_DrawPatch(x, y, 0, hu_font[c]);
-	x+=w;
+        c = toupper(*string) - HU_FONTSTART;
+        string++;
+        if (c < 0 || c> HU_FONTSIZE)
+        {
+            x += 4;
+            continue;
+        }
+            
+        w = SHORT (hu_font[c]->width);
+        if (x + w > SCREENWIDTH) break;
+
+        if (direct) {
+            V_DrawPatchDirect(x, y, 0, hu_font[c]);
+        } else {
+            V_DrawPatch(x, y, 0, hu_font[c]);
+        }
+        x += w;
     }
 
     return x;
@@ -109,26 +105,22 @@ M_DrawText
 #define O_BINARY 0
 #endif
 
-boolean
-M_WriteFile
-( char const*	name,
-  void*		source,
-  int		length )
+boolean M_WriteFile (char const* name, void* source, int length)
 {
     int		handle;
     int		count;
 	
-    handle = open ( name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666);
+    handle = open (name, O_WRONLY | O_CREAT | O_TRUNC | O_BINARY, 0666);
 
-    if (handle == -1)
-	return false;
-
+    if (handle == -1) {
+	    return false;
+    }
     count = write (handle, source, length);
     close (handle);
 	
-    if (count < length)
-	return false;
-		
+    if (count < length) {
+	    return false;
+    }
     return true;
 }
 
@@ -136,28 +128,27 @@ M_WriteFile
 //
 // M_ReadFile
 //
-int
-M_ReadFile
-( char const*	name,
-  byte**	buffer )
+int M_ReadFile (char const*	name, byte** buffer)
 {
     int	handle, count, length;
     struct stat	fileinfo;
     byte		*buf;
 	
     handle = open (name, O_RDONLY | O_BINARY, 0666);
-    if (handle == -1)
-	I_Error ("Couldn't read file %s", name);
-    if (fstat (handle,&fileinfo) == -1)
-	I_Error ("Couldn't read file %s", name);
+    if (handle == -1) {
+	    I_Error ("Couldn't read file %s", name);
+    }
+    if (fstat (handle,&fileinfo) == -1) {
+	    I_Error ("Couldn't read file %s", name);
+    }
     length = fileinfo.st_size;
     buf = Z_Malloc (length, PU_STATIC, NULL);
     count = read (handle, buf, length);
     close (handle);
 	
-    if (count < length)
-	I_Error ("Couldn't read file %s", name);
-		
+    if (count < length) {
+	    I_Error ("Couldn't read file %s", name);
+    }
     *buffer = buf;
     return length;
 }
@@ -313,19 +304,17 @@ void M_SaveDefaults (void)
 	
     f = fopen (defaultfile, "w");
     if (!f)
-	return; // can't write the file, but don't complain
+	    return; // can't write the file, but don't complain
 		
-    for (i=0 ; i<numdefaults ; i++)
+    for (i = 0; i < numdefaults; i++)
     {
-	if (defaults[i].defaultvalue > -0xfff
-	    && defaults[i].defaultvalue < 0xfff)
-	{
-	    v = *defaults[i].location;
-	    fprintf (f,"%s\t\t%i\n",defaults[i].name,v);
-	} else {
-	    fprintf (f,"%s\t\t\"%s\"\n",defaults[i].name,
-		     * (char **) (defaults[i].location));
-	}
+        if (defaults[i].defaultvalue > -0xfff && defaults[i].defaultvalue < 0xfff)
+        {
+            v = *defaults[i].location;
+            fprintf (f, "%s\t\t%i\n", defaults[i].name, v);
+        } else {
+            fprintf (f, "%s\t\t\"%s\"\n", defaults[i].name, * (char **) (defaults[i].location));
+        }
     }
 	
     fclose (f);
@@ -350,56 +339,61 @@ void M_LoadDefaults (void)
     
     // set everything to base values
     numdefaults = sizeof(defaults)/sizeof(defaults[0]);
-    for (i=0 ; i<numdefaults ; i++)
-	*defaults[i].location = defaults[i].defaultvalue;
-    
+    for (i = 0; i < numdefaults; i++) {
+	    *defaults[i].location = defaults[i].defaultvalue;
+    }
     // check for a custom default file
     i = M_CheckParm ("-config");
-    if (i && i<myargc-1)
+    if (i && i < myargc-1)
     {
-	defaultfile = myargv[i+1];
-	printf ("	default file: %s\n",defaultfile);
+        defaultfile = myargv[i+1];
+        printf ("	default file: %s\n",defaultfile);
     }
-    else
-	defaultfile = basedefault;
-    
+    else {
+	    defaultfile = basedefault;
+    }
     // read the file in, overriding any set defaults
     f = fopen (defaultfile, "r");
-    if (f)
-    {
-	while (!feof(f))
-	{
-	    isstring = false;
-	    if (fscanf (f, "%79s %[^\n]\n", def, strparm) == 2)
-	    {
-		if (strparm[0] == '"')
-		{
-		    // get a string default
-		    isstring = true;
-		    len = strlen(strparm);
-		    newstring = (char *) malloc(len);
-		    strparm[len-1] = 0;
-		    strcpy(newstring, strparm+1);
-		}
-		else if (strparm[0] == '0' && strparm[1] == 'x')
-		    sscanf(strparm+2, "%x", &parm);
-		else
-		    sscanf(strparm, "%i", &parm);
-		for (i=0 ; i<numdefaults ; i++)
-		    if (!strcmp(def, defaults[i].name))
-		    {
-			if (!isstring)
-			    *defaults[i].location = parm;
-			else
-			    *defaults[i].location =
-				(int) newstring;
-			break;
-		    }
-	    }
-	}
-		
-	fclose (f);
+
+
+    // Changes: Changed if(f) statement to if(!f) to unclog some nested if statements
+    if (!f) {
+        return;
     }
+
+    while (!feof(f))
+    {
+        isstring = false;
+        if (fscanf (f, "%79s %[^\n]\n", def, strparm) == 2)
+        {
+            if (strparm[0] == '"')
+            {
+                // get a string default
+                isstring = true;
+                len = strlen(strparm);
+                newstring = (char *) malloc(len);
+                strparm[len-1] = 0;
+                strcpy(newstring, strparm+1);
+            }
+            else if (strparm[0] == '0' && strparm[1] == 'x') {
+                sscanf(strparm+2, "%x", &parm);
+            } else {
+                sscanf(strparm, "%i", &parm);
+            }
+            for (i = 0; i < numdefaults; i++) {
+                if (!strcmp(def, defaults[i].name))
+                {
+                    if (!isstring) {
+                        *defaults[i].location = parm;
+                    } else {
+                        *defaults[i].location = (int) newstring;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    fclose (f);
 }
 
 
@@ -438,13 +432,7 @@ typedef struct
 //
 // WritePCXfile
 //
-void
-WritePCXfile
-( char*		filename,
-  byte*		data,
-  int		width,
-  int		height,
-  byte*		palette )
+void WritePCXfile (char* filename, byte* data, int width, int height, byte*	palette)
 {
     int		i;
     int		length;
@@ -473,22 +461,23 @@ WritePCXfile
     // pack the image
     pack = &pcx->data;
 	
-    for (i=0 ; i<width*height ; i++)
+    for (i = 0; i < width * height; i++)
     {
-	if ( (*data & 0xc0) != 0xc0)
-	    *pack++ = *data++;
-	else
-	{
-	    *pack++ = 0xc1;
-	    *pack++ = *data++;
-	}
+        if ( (*data & 0xc0) != 0xc0) {
+            *pack++ = *data++;
+        }
+        else
+        {
+            *pack++ = 0xc1;
+            *pack++ = *data++;
+        }
     }
     
     // write the palette
     *pack++ = 0x0c;	// palette ID byte
-    for (i=0 ; i<768 ; i++)
-	*pack++ = *palette++;
-    
+    for (i = 0; i < 768; i++) {
+	    *pack++ = *palette++;
+    }
     // write output file
     length = pack - (byte *)pcx;
     M_WriteFile (filename, pcx, length);
@@ -513,20 +502,19 @@ void M_ScreenShot (void)
     // find a file name to save it to
     strcpy(lbmname,"DOOM00.pcx");
 		
-    for (i=0 ; i<=99 ; i++)
+    for (i = 0; i <= 99; i++)
     {
-	lbmname[4] = i/10 + '0';
-	lbmname[5] = i%10 + '0';
-	if (access(lbmname,0) == -1)
-	    break;	// file doesn't exist
+        lbmname[4] = i / 10 + '0';
+        lbmname[5] = i % 10 + '0';
+        if (access(lbmname,0) == -1) {
+            break;	// file doesn't exist
+        }
     }
-    if (i==100)
-	I_Error ("M_ScreenShot: Couldn't create a PCX");
-    
+    if (i == 100) {
+	    I_Error ("M_ScreenShot: Couldn't create a PCX");
+    }
     // save the pcx file
-    WritePCXfile (lbmname, linear,
-		  SCREENWIDTH, SCREENHEIGHT,
-		  W_CacheLumpName ("PLAYPAL",PU_CACHE));
+    WritePCXfile (lbmname, linear, SCREENWIDTH, SCREENHEIGHT, W_CacheLumpName ("PLAYPAL",PU_CACHE));
 	
     players[consoleplayer].message = "screen shot";
 }

@@ -74,7 +74,7 @@ typedef enum
     // Press "Fire".
     BT_ATTACK		= 1,
     // Use button, to open doors, activate switches.
-    BT_USE		= 2,
+    BT_USE		    = 2,
 
     // Flag: game events, not really buttons.
     BT_SPECIAL		= 128,
